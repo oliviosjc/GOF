@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities.Schedule.Bulk
+﻿using Domain.Entities.Window.Time;
+
+namespace Domain.Entities.Schedule.Bulk
 {
-    public class BulkSchedule : BaseSchedule
+    public class BulkSchedule<TWindowTime> : BaseSchedule<TWindowTime> where TWindowTime : WindowTime
     {
     }
 }

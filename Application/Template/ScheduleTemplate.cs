@@ -1,11 +1,12 @@
 ﻿using Application.Commands.Schedule;
 using Application.Response;
 using Domain.Entities.Schedule;
+using Domain.Entities.Window.Time;
 using FluentValidation;
 
 namespace Application.Template
 {
-    public abstract class ScheduleTemplate
+    public abstract class ScheduleTemplate<TWindowTime> where TWindowTime : WindowTime
     {
         public ValidationResponse Execute(CreateScheduleCommand command)
         {
@@ -44,8 +45,8 @@ namespace Application.Template
         }
 
         protected abstract void ValidateCommand(CreateScheduleCommand command);
-        protected abstract BaseSchedule CreateSchedule(CreateScheduleCommand command);
-        protected abstract void LinkWindowTime(BaseSchedule schedule, Guid windowTimeId);
-        protected abstract void ExecuteAdditionalSteps(BaseSchedule schedule, CreateScheduleCommand command);
+        protected abstract BaseSchedule<TWindowTime> CreateSchedule(CreateScheduleCommand command);
+        protected abstract void LinkWindowTime(BaseSchedule<TWindowTime> schedule, Guid windowTimeId);
+        protected abstract void ExecuteAdditionalSteps(BaseSchedule<TWindowTime> schedule, CreateScheduleCommand command);
     }
 }

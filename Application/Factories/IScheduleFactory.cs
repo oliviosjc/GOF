@@ -1,11 +1,12 @@
 ﻿using Application.Commands.Schedule;
 using Domain.Entities.Schedule;
+using Domain.Entities.Window.Time;
 
 namespace Application.Factories
 {
-    public interface IScheduleFactory
+    public interface IScheduleFactory<TWindowTime> where TWindowTime : WindowTime
     {
         bool CanHandle(CreateScheduleCommand command);
-        BaseSchedule CreateSchedule(CreateScheduleCommand command);
+        BaseSchedule<TWindowTime> CreateSchedule(CreateScheduleCommand command);
     }
 }

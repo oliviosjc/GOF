@@ -1,6 +1,5 @@
 ﻿using Domain.Entities.Window.Time;
 using Domain.Entities.Window.Time.Bulk;
-using Domain.Entities.Window.Time.Container;
 using Domain.Entities.Window.Time.Liquid;
 using Infra.Repositories.Interfaces;
 
@@ -31,16 +30,6 @@ namespace Infra.Repositories
                     EndDate = DateTime.UtcNow.AddHours(2),
                     MaxTemperature = 30,
                     MinTemperature = -10
-                }
-            },
-            {
-                Guid.Parse("33333333-3333-3333-3333-333333333333"),
-                new ContainerWindowTime
-                {
-                    StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddHours(3),
-                    ContainerType = "Standard",
-                    MaxWeight = 20000
                 }
             }
         };

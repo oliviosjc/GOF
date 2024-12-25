@@ -10,6 +10,9 @@ using FluentValidation;
 using Application.Template.Bulk;
 using Application.Template;
 using Domain.Enumerator.Schedule;
+using Domain.Entities.Window.Time.Bulk;
+using Domain.Entities.Window.Time.Liquid;
+using Domain.Entities.Window.Time;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,27 +20,38 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Validators
 builder.Services.AddSingleton<ScheduleValidatorResolver>();
 builder.Services.AddSingleton<IValidator<CreateScheduleCommand>, BulkScheduleValidator>();
 builder.Services.AddSingleton<IValidator<CreateScheduleCommand>, BulkScheduleImportValidator>();
 builder.Services.AddSingleton<IValidator<CreateScheduleCommand>, BulkScheduleExportValidator>();
 builder.Services.AddSingleton<IValidator<CreateScheduleCommand>, LiquidScheduleValidator>();
 
-builder.Services.AddSingleton<IScheduleFactory, BulkScheduleFactory>();
-builder.Services.AddSingleton<IScheduleFactory, LiquidScheduleFactory>();
+// Base Factories
+builder.Services.AddSingleton<IScheduleFactory<BulkWindowTime>, BulkScheduleFactory>();
+builder.Services.AddSingleton<IScheduleFactory<LiquidWindowTime>, LiquidScheduleFactory>();
 
-builder.Services.AddSingleton<ISpecializedScheduleFactory, BulkScheduleImportFactory>();
-builder.Services.AddSingleton<ISpecializedScheduleFactory, BulkScheduleExportFactory>();
+// Base Factory Resolvers
+builder.Services.AddSingleton<ScheduleFactoryResolver<BulkWindowTime>>();
+builder.Services.AddSingleton<ScheduleFactoryResolver<LiquidWindowTime>>();
 
-builder.Services.AddSingleton<ScheduleFactoryResolver>();
-builder.Services.AddSingleton<SpecializedScheduleFactoryResolver>();
+// Specialized Factories
+builder.Services.AddSingleton<ISpecializedScheduleFactory<BulkWindowTimeExport>, BulkScheduleExportFactory>();
+builder.Services.AddSingleton<ISpecializedScheduleFactory<BulkWindowTimeImport>, BulkScheduleImportFactory>();
 
+// Specialized Factory Resolver
+builder.Services.AddSingleton(typeof(SpecializedScheduleFactoryResolver<>), typeof(SpecializedScheduleFactoryResolver<>));
+
+// Templates
 builder.Services.AddSingleton<BulkScheduleTemplate>();
+builder.Services.AddSingleton<BulkScheduleImportTemplate>();
 
-builder.Services.AddSingleton(provider => new Dictionary<ScheduleTypeEnumerator, ScheduleTemplate>
+// Dictionary de Templates
+builder.Services.AddSingleton(provider => new Dictionary<(ScheduleTypeEnumerator Type, ScheduleOperationEnumerator Operation), object>
 {
-    { ScheduleTypeEnumerator.BULK, provider.GetRequiredService<BulkScheduleTemplate>() }
+    { (ScheduleTypeEnumerator.BULK, ScheduleOperationEnumerator.IMPORT), provider.GetRequiredService<BulkScheduleImportTemplate>() }
 });
+
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateScheduleCommandHandler).Assembly));
 

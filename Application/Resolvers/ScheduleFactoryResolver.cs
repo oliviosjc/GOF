@@ -1,33 +1,31 @@
 ﻿using Application.Commands.Schedule;
 using Application.Factories;
 using Domain.Entities.Schedule;
+using Domain.Entities.Window.Time;
 using Domain.Enumerator.Schedule;
 
 namespace Application.Resolvers
 {
-    public class ScheduleFactoryResolver
+    public class ScheduleFactoryResolver<TWindowTime> where TWindowTime : WindowTime
     {
-        private readonly IEnumerable<IScheduleFactory> _baseFactories;
-        private readonly SpecializedScheduleFactoryResolver _specializedResolver;
+        private readonly IEnumerable<IScheduleFactory<TWindowTime>> _baseFactories;
+        private readonly SpecializedScheduleFactoryResolver<TWindowTime> _specializedResolver;
 
-        public ScheduleFactoryResolver(IEnumerable<IScheduleFactory> baseFactories, SpecializedScheduleFactoryResolver specializedResolver)
+        public ScheduleFactoryResolver(IEnumerable<IScheduleFactory<TWindowTime>> baseFactories, 
+            SpecializedScheduleFactoryResolver<TWindowTime> specializedResolver)
         {
             _baseFactories = baseFactories;
             _specializedResolver = specializedResolver;
         }
 
-        public BaseSchedule Resolve(CreateScheduleCommand command)
+        public BaseSchedule<TWindowTime> Resolve(CreateScheduleCommand command)
         {
-            var baseFactory = _baseFactories.FirstOrDefault(f => f.CanHandle(command));
-            if (baseFactory == null)
-                throw new InvalidOperationException("Nenhuma fábrica base disponível para lidar com o comando.");
+            var factory = _baseFactories.FirstOrDefault(f => f.CanHandle(command));
 
-            var baseSchedule = baseFactory.CreateSchedule(command);
+            if (factory == null)
+                throw new InvalidOperationException($"Nenhuma fábrica base disponível para o tipo {typeof(TWindowTime).Name}.");
 
-            return command.Operation is ScheduleOperationEnumerator.IMPORT or ScheduleOperationEnumerator.EXPORT
-                ? _specializedResolver.Resolve(baseSchedule, command)
-                : baseSchedule;
+            return factory.CreateSchedule(command);
         }
     }
-
 }

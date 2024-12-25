@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities.Schedule.Liquid
+﻿using Domain.Entities.Window.Time.Liquid;
+
+namespace Domain.Entities.Schedule.Liquid
 {
-    public class LiquidScheduleExport : LiquidSchedule
+    public class LiquidScheduleExport : LiquidSchedule<LiquidWindowTimeExport>
     {
     }
 }

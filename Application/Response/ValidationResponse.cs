@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Schedule;
+using Domain.Entities.Window.Time;
 
 namespace Application.Response
 {
@@ -7,7 +8,7 @@ namespace Application.Response
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
         public List<string> Errors { get; set; } = new();
-        public BaseSchedule? Schedule { get; set; }
+        public BaseSchedule<WindowTime> Schedule { get; set; } = null!;
 
         public void AddError(string errorMessage)
         {
